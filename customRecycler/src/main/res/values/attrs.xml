@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ProRecyclerView">
+        <attr name="pro_warn_text" format="reference"/>
+        <attr name="pro_button_text" format="reference"/>
+        <attr name="pro_empty_image" format="reference"/>
+        <attr name="pro_swipe" format="boolean"/>
+        <attr name="pro_paging" format="boolean"/>
+        <attr name="pro_paging_size" format="integer"/>
+    </declare-styleable>
+</resources>

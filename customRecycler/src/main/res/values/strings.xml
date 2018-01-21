@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">list-library</string>
+    <string name="pro_string_retry">Retry</string>
+    <string name="pro_string_empty_data">Empty data</string>
+</resources>

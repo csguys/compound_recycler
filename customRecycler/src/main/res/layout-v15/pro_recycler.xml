@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content">
+<android.support.v4.widget.SwipeRefreshLayout
+    android:id="@+id/pro_x_swipe_to_refresh"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+<demo.base.list_library.CustomRecycler
+    android:id="@+id/pro_x_recycler_view"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"/>
+</android.support.v4.widget.SwipeRefreshLayout>
+<RelativeLayout
+    android:visibility="gone"
+    android:id="@+id/pro_x_error_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <android.support.v7.widget.AppCompatImageView
+        android:src="@drawable/ic_folder_open_black_24dp"
+        android:id="@+id/pro_x_error_image"
+        android:layout_centerInParent="true"
+        android:layout_width="@dimen/pro_x_image_width"
+        android:layout_height="@dimen/pro_x_image_width"/>
+    <android.support.v7.widget.AppCompatTextView
+        android:text="@string/pro_string_empty_data"
+        android:textStyle="bold"
+        android:visibility="gone"
+        android:id="@+id/pro_x_error_text"
+        android:gravity="center"
+        android:padding="5dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/pro_x_error_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/pro_x_error_button"
+        android:visibility="gone"
+        android:text="@string/pro_string_retry"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:padding="5dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/pro_x_error_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+</RelativeLayout>
+</RelativeLayout>
