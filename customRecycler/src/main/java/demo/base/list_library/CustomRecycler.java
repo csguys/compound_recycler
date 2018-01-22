@@ -55,13 +55,9 @@ public class CustomRecycler extends RecyclerView {
      */
     private void observeAdapter() {
         Adapter<?> adapter = getAdapter();
-        if (adapter != null) {
+        if (adapter != null && emptyListener != null) {
             Log.i(TAG, "adapter set :" + adapter.getItemCount());
-            if (adapter.getItemCount() == 0) {
-                if (emptyListener != null) {
-                    emptyListener.onEmptyAdapter(true);
-                }
-            }
+            emptyListener.onEmptyAdapter(adapter.getItemCount() == 0);
         }
     }
 
@@ -108,6 +104,7 @@ public class CustomRecycler extends RecyclerView {
         if (adapter != null) {
             adapter.registerAdapterDataObserver(observer);
         }
+        observer.onChanged();
     }
 
 

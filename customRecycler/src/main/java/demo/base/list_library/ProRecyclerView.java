@@ -10,6 +10,7 @@ import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -183,6 +184,7 @@ public class ProRecyclerView extends FrameLayout implements View.OnClickListener
     private void showEmptyView(final boolean enable) {
         errorLayout.setVisibility(enable ? View.VISIBLE : View.GONE);
         recyclerView.setVisibility(enable ? View.GONE : View.VISIBLE);
+        Log.i(TAG, "showEmptyCalled");
     }
 
     @Override
