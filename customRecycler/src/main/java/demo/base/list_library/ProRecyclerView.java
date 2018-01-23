@@ -24,33 +24,48 @@ public class ProRecyclerView extends FrameLayout implements View.OnClickListener
     private static final String TAG = ProRecyclerView.class.getSimpleName();
     private static final boolean DEFAULT_SWIPE_BEHAVIOUR = false;
     private static final boolean DEFAULT_PAGINATION = false;
-    private static final int DEFAULT_LOAD_THRESHOLD = 10;
+    private static final int DEFAULT_LOAD_THRESHOLD = 0;
+
+    private static int RES_EMPTY_VIEW = R.drawable.ic_folder_open_black_24dp;
 
     private CustomRecycler recyclerView;
     private AppCompatImageView ivEmptyImage;
     private AppCompatTextView tvMessage, tvButton;
     private SwipeRefreshLayout swipeRefreshLayout;
     private View errorLayout;
-    private int resImage, resMessage, resButton;
+    private int resInfoImage;
+    private CharSequence textMessage;
+    private CharSequence textButton;
     private OnClickListener onRetryListener;
     private boolean isSwipeEnable;
-    private boolean isPagination;
     private int paginationThreshold;
+    private RecyclerView.LayoutManager proLayoutManager;
+    private PaginationListener paginationListener;
 
 
     public ProRecyclerView(final Context context) {
-        super(context);
-        initView(context);
+        this(context, null);
     }
 
     public ProRecyclerView(final Context context, @Nullable final AttributeSet attrs) {
-        super(context, attrs);
-        initView(context, attrs);
+        this(context, attrs,0);
     }
 
     public ProRecyclerView(final Context context, @Nullable final AttributeSet attrs, final int defStyle) {
         super(context, attrs, defStyle);
         initView(context, attrs);
+    }
+
+    private void initView(final Context context, final AttributeSet attributeSet) {
+        TypedArray array = context.getTheme().obtainStyledAttributes(attributeSet, R.styleable.ProRecyclerView
+                , 0, 0);
+        resInfoImage = array.getResourceId(R.styleable.ProRecyclerView_pro_empty_image, R.drawable.ic_folder_open_black_24dp);
+        textMessage = array.getText(R.styleable.ProRecyclerView_pro_info_text);
+        textButton = array.getText(R.styleable.ProRecyclerView_pro_button_text);
+        isSwipeEnable = array.getBoolean(R.styleable.ProRecyclerView_pro_swipe, DEFAULT_SWIPE_BEHAVIOUR);
+        paginationThreshold = array.getInteger(R.styleable.ProRecyclerView_pro_paging_size, DEFAULT_LOAD_THRESHOLD);
+        array.recycle();
+        initView(context);
     }
 
     private void initView(final Context context) {
@@ -63,28 +78,14 @@ public class ProRecyclerView extends FrameLayout implements View.OnClickListener
         tvButton.setOnClickListener(this);
         recyclerView.setEmptyListener(this);
         errorLayout = view.findViewById(R.id.pro_x_error_layout);
-        tvMessage.setText(resMessage);
-        tvButton.setText(resButton);
-        ivEmptyImage.setImageResource(resImage);
+        tvMessage.setText(textMessage);
+        tvButton.setText(textButton);
+        ivEmptyImage.setImageResource(resInfoImage);
         swipeRefreshLayout.setEnabled(isSwipeEnable);
-    }
-
-    private void initView(final Context context, final AttributeSet attributeSet) {
-        TypedArray array = context.getTheme().obtainStyledAttributes(attributeSet, R.styleable.ProRecyclerView
-                , 0, 0);
-        resImage = array.getResourceId(R.styleable.ProRecyclerView_pro_empty_image, R.drawable.ic_folder_open_black_24dp);
-        resMessage = array.getResourceId(R.styleable.ProRecyclerView_pro_warn_text, R.string.pro_string_empty_data);
-        resButton = array.getResourceId(R.styleable.ProRecyclerView_pro_button_text, R.string.pro_string_retry);
-        isSwipeEnable = array.getBoolean(R.styleable.ProRecyclerView_pro_swipe, DEFAULT_SWIPE_BEHAVIOUR);
-        isPagination = array.getBoolean(R.styleable.ProRecyclerView_pro_paging, DEFAULT_PAGINATION);
-        paginationThreshold = array.getInteger(R.styleable.ProRecyclerView_pro_paging_size, DEFAULT_LOAD_THRESHOLD);
-        array.recycle();
-        initView(context);
     }
 
     /**
      * Check weather swipe is enabled
-     *
      * @return boolean
      */
     public boolean isSwipeEnable() {
@@ -92,9 +93,8 @@ public class ProRecyclerView extends FrameLayout implements View.OnClickListener
     }
 
     /**
-     * Enable swipe to refresh
-     *
-     * @param enable enable boolean flag
+     * Enable SwipeRefreshLayout
+     * @param enable boolean
      */
     public void setSwipeEnable(final boolean enable) {
         this.isSwipeEnable = enable;
@@ -103,7 +103,6 @@ public class ProRecyclerView extends FrameLayout implements View.OnClickListener
 
     /**
      * Check weather SwipeRefreshing in progress
-     *
      * @return refreshing status
      */
     public boolean isRefreshing() {
@@ -111,8 +110,9 @@ public class ProRecyclerView extends FrameLayout implements View.OnClickListener
     }
 
     /**
-     * Setter to set SwipeRefreshing
-     *
+     * change status of SwipeRefreshLayout
+     * false disable
+     * true enable
      * @param refreshing boolean
      */
     public void setRefreshing(final boolean refreshing) {
@@ -124,7 +124,6 @@ public class ProRecyclerView extends FrameLayout implements View.OnClickListener
 
     /**
      * Method to attach listener for SwipeRefreshing view
-     *
      * @param onRefreshListener OnRefreshListener
      */
     public void setSwipeRefreshLayoutListener(final SwipeRefreshLayout.OnRefreshListener onRefreshListener) {
@@ -134,12 +133,11 @@ public class ProRecyclerView extends FrameLayout implements View.OnClickListener
 
     /**
      * SetImage Resource for info view in Recycler in case of empty data, internet issue
-     *
-     * @param resImage int image resource
+     * @param resInfoImage int image resource
      */
-    public void setResImage(@DrawableRes final int resImage) {
-        this.resImage = resImage;
-        ivEmptyImage.setImageResource(resImage);
+    public void setResInfoImage(@DrawableRes final int resInfoImage) {
+        this.resInfoImage = resInfoImage;
+        ivEmptyImage.setImageResource(resInfoImage);
     }
 
     /**
@@ -153,35 +151,71 @@ public class ProRecyclerView extends FrameLayout implements View.OnClickListener
     /**
      * Set String resource message for info
      *
-     * @param resMessage int string resource
+     * @param textMessage int string resource
      */
-    public void setResMessage(@StringRes  final int resMessage) {
-        this.resMessage = resMessage;
-        tvMessage.setText(resMessage);
+    public void setTextMessage(@StringRes  final int textMessage) {
+        this.textMessage = getContext().getString(textMessage);
+        tvMessage.setText(textMessage);
     }
 
     /**
      * Set String resource name for Retry button
-     * @param resButton int String Resource
+     * @param textButton int String Resource
      */
-    public void setResButton(@StringRes final int resButton) {
-        this.resButton = resButton;
-        tvButton.setText(resButton);
+    public void setTextButton(@StringRes final int textButton) {
+        this.textButton = getContext().getString(textButton);
+        tvButton.setText(textButton);
     }
 
     /**
-     * Use to set onRetry click listener
-     * @param onRetryClickListener OnClickListener
+     * set CharSequence message for text info
+     * @param textMessage int string resource
      */
-    public void setOnRetryListener(final View.OnClickListener onRetryClickListener) {
+    public void setTextMessage(final CharSequence textMessage) {
+        this.textMessage = textMessage;
+        this.tvMessage.setText(textMessage);
+    }
+
+    /**
+     * set CharSequence name for Retry button
+     * @param textButton int String Resource
+     */
+    public void setTextButton(final CharSequence textButton) {
+        this.textButton = textButton;
+        tvButton.setText(textButton);
+    }
+
+    /**
+     * method to set click listener on view below info/error image
+     * @param onRetryClickListener View.OnClickListener object
+     */
+    public void setOnRetryListener(final OnClickListener onRetryClickListener) {
         this.onRetryListener = onRetryClickListener;
     }
+
+    /**
+     * get pagination threshold
+     * @return threshold limit
+     */
+    public int getPaginationThreshold() {
+        return paginationThreshold;
+    }
+
+    /**
+     * set pagination threshold
+     * @param paginationThreshold threshold limit
+     */
+    public void setPaginationThreshold(final int paginationThreshold) {
+        this.paginationThreshold = paginationThreshold;
+    }
+
 
     /**
      * Method to show info when adapter is empty
      * @param enable boolean flag
      */
     private void showEmptyView(final boolean enable) {
+        ivEmptyImage.setImageResource(RES_EMPTY_VIEW);
         errorLayout.setVisibility(enable ? View.VISIBLE : View.GONE);
         recyclerView.setVisibility(enable ? View.GONE : View.VISIBLE);
         Log.i(TAG, "showEmptyCalled");
@@ -199,14 +233,6 @@ public class ProRecyclerView extends FrameLayout implements View.OnClickListener
     @Override
     public void onEmptyAdapter(final boolean enable) {
         showEmptyView(enable);
-    }
-
-    /**
-     * Attach ProAdapter to recycler
-     * @param adapter adapter
-     */
-    public void setAdapter(final ProAdapter adapter) {
-        recyclerView.setAdapter(adapter);
     }
 
     /**
@@ -230,6 +256,7 @@ public class ProRecyclerView extends FrameLayout implements View.OnClickListener
      * @param layout LayoutManager
      */
     public void setLayoutManager(final RecyclerView.LayoutManager layout) {
+        proLayoutManager = layout;
         recyclerView.setLayoutManager(layout);
     }
 
@@ -239,6 +266,33 @@ public class ProRecyclerView extends FrameLayout implements View.OnClickListener
      */
     public RecyclerView getRecyclerView() {
         return recyclerView;
+    }
+
+    /**
+     * Method to attach pagination listener which get called every time when scrolling reached to given value {@link ProRecyclerView#paginationThreshold}
+     * @param pagingListener {@link PaginationListener} object
+     */
+    public void setPagingListener(final PaginationListener pagingListener) {
+        //if threshold is 0 don't attach listener
+        if (paginationThreshold <= 0) {
+            return;
+        }
+        this.paginationListener = pagingListener;
+        recyclerView.addOnScrollListener(new PagingManager(proLayoutManager, paginationThreshold) {
+            @Override
+            public void onEndReached() {
+                if (paginationListener != null) {
+                    paginationListener.onEndReaching();
+                }
+            }
+        });
+    }
+
+    /**
+     * Listener interface for paging callback
+     */
+    public interface PaginationListener{
+        void onEndReaching();
     }
 
 }

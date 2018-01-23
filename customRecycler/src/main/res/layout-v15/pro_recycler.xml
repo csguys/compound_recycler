@@ -24,9 +24,6 @@
         android:layout_width="@dimen/pro_x_image_width"
         android:layout_height="@dimen/pro_x_image_width"/>
     <android.support.v7.widget.AppCompatTextView
-        android:text="@string/pro_string_empty_data"
-        android:textStyle="bold"
-        android:visibility="gone"
         android:id="@+id/pro_x_error_text"
         android:gravity="center"
         android:padding="5dp"
@@ -36,8 +33,6 @@
         android:layout_height="wrap_content"/>
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/pro_x_error_button"
-        android:visibility="gone"
-        android:text="@string/pro_string_retry"
         android:gravity="center"
         android:textStyle="bold"
         android:textSize="18sp"

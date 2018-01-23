@@ -6,6 +6,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +38,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.b2).setOnClickListener(this);
         findViewById(R.id.b3).setOnClickListener(this);
         findViewById(R.id.b4).setOnClickListener(this);
-
+        recyclerView.setPagingListener(new ProRecyclerView.PaginationListener() {
+            @Override
+            public void onEndReaching() {
+                Log.d("main", "paging---");
+            }
+        });
     }
 
     @Override
@@ -61,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 });
                 break;
             case R.id.b4:
+                recyclerView.setResInfoImage(R.drawable.ic_launcher_background);
                 break;
         }
     }
